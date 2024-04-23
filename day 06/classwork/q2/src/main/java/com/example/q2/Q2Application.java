@@ -1,31 +1,66 @@
 package com.example.q2;
 
+import java.time.Duration;
+
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
 // import org.openqa.selenium.support.ui.Select;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class Q2Application {
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 
 		WebDriver driver = new ChromeDriver();
 
+		// getting into the page
 		driver.get("https://economictimes.indiatimes.com/et-now/results");
 
+		// creating xplicit wait
+		@SuppressWarnings("rawtypes")
+		Wait wait = new WebDriverWait(driver, Duration.ofSeconds(60000));
+
+		// click the mutual funds
+		wait.until(ExpectedConditions.elementToBeClickable(By.linkText("Mutual Funds")));
 		driver.findElement(By.xpath("//*[@id=\"topnav\"]/div[10]")).click();
 
-		// Select sel = new
-		// Select(driver.findElement(By.xpath("//*[@id=\"amcSelection\"]")));
+		// scrolling down for the form
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("window.scrollBy(0,550)", "");
 
-		// sel.selectByVisibleText("Canara Robeco");
+		// select Canare Robeco
+		Select select = new Select(driver.findElement(By.xpath("//*[@id=\"amcSelection\"]")));
+		select.selectByVisibleText("Canara Robeco");
 
-		// Select st = new
-		// Select(driver.findElement(By.xpath("//*[@id=\"schemenm\"]")));
+		// select the next option
+		wait.until(ExpectedConditions.elementToBeClickable(driver.findElement(By.id("schemenm"))));
+		Select st = new Select(driver.findElement(By.id("schemenm")));
+		st.selectByValue(null);
 
-		// st.selectByIndex(4);
+		// summiting it
+		driver.findElement(By.xpath("//*[@id=\"anchor3\"]")).click();
+
+		// this will navigate to another page and the we want to handle on that
+		// editing the inverstment growth
+		driver.findElement(By.xpath("//*[@id=\"installment_type\"]/li/ul/li[1]")).click();
+		driver.findElement(By.xpath("//*[@id=\"installment_amt\"]/li/ul/li[3]")).click();
+		driver.findElement(By.xpath("//*[@id=\"installment_period\"]/li/ul/li[4]")).click();
+
+		// navigate to the return session
+		driver.findElement(By.xpath("//*[@id=\"mfNav\"]/div/ul/li[2]")).click();
+
+		// get the text of the first row
+		String str = driver.findElement(By.xpath("//*[@id=\"mfReturns\"]/div[2]/div[2]/ul/li[1]/table/tbody/tr[1]"))
+				.getText();
+		System.out.print(str);
 
 		SpringApplication.run(Q2Application.class, args);
 	}
